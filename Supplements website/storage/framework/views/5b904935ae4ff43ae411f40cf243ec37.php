@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    @php
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <?php
         $siteName = App\Models\Setting::get('site_name', 'Power man supplements');
         $siteDescription = App\Models\Setting::get('site_description', 'Premium Dietary Supplements & Health Products');
-    @endphp
-    <title>@yield('title', $siteName . ' - ' . $siteDescription)</title>
+    ?>
+    <title><?php echo $__env->yieldContent('title', $siteName . ' - ' . $siteDescription); ?></title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,79 +56,82 @@
             <div class="flex justify-between items-center h-20">
                 
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="{{ route('products.index') }}" class="flex items-center gap-2 group">
-                        @php $siteLogo = App\Models\Setting::get('site_logo'); @endphp
-                        @if($siteLogo)
-                            <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-10 w-auto object-contain transition-transform group-hover:scale-105">
-                        @else
+                    <a href="<?php echo e(route('products.index')); ?>" class="flex items-center gap-2 group">
+                        <?php $siteLogo = App\Models\Setting::get('site_logo'); ?>
+                        <?php if($siteLogo): ?>
+                            <img src="<?php echo e(asset('storage/' . $siteLogo)); ?>" alt="<?php echo e($siteName); ?>" class="h-10 w-auto object-contain transition-transform group-hover:scale-105">
+                        <?php else: ?>
                             <div class="bg-gradient-to-tr from-primary-600 to-secondary-500 text-white p-2 rounded-lg shadow-lg">
                                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                                 </svg>
                             </div>
-                        @endif
+                        <?php endif; ?>
                         <span class="font-heading font-bold text-xl tracking-tight text-gray-900 group-hover:text-primary-600 transition-colors">
-                            {{ $siteName }}
+                            <?php echo e($siteName); ?>
+
                         </span>
                     </a>
                 </div>
 
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ route('products.index') }}" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Home</a>
-                    <a href="{{ route('products.list') }}" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Shop</a>
-                    <a href="{{ route('about') }}" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">About</a>
-                    <a href="{{ route('contact') }}" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Contact</a>
+                    <a href="<?php echo e(route('products.index')); ?>" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Home</a>
+                    <a href="<?php echo e(route('products.list')); ?>" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Shop</a>
+                    <a href="<?php echo e(route('about')); ?>" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">About</a>
+                    <a href="<?php echo e(route('contact')); ?>" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Contact</a>
                 </div>
 
                 <div class="flex items-center space-x-2 md:space-x-5">
-                    @auth
-                        <a href="{{ route('messages.inbox') }}" class="text-gray-500 hover:text-primary-600 transition-colors relative p-2" onclick="clearMessageCounter(this, event)">
+                    <?php if(auth()->guard()->check()): ?>
+                        <a href="<?php echo e(route('messages.inbox')); ?>" class="text-gray-500 hover:text-primary-600 transition-colors relative p-2" onclick="clearMessageCounter(this, event)">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            @php
+                            <?php
                                 $userMessages = App\Models\Message::where('user_id', Auth::id())
                                     ->orWhere('email', Auth::user()->email)
                                     ->where('status', 'replied')
                                     ->where('updated_at', '>', Auth::user()->last_message_check ?? '1970-01-01')
                                     ->count();
-                            @endphp
-                            @if($userMessages > 0)
+                            ?>
+                            <?php if($userMessages > 0): ?>
                                 <span class="absolute top-2 right-2 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white message-counter"></span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
-                        <a href="{{ route('cart.view') }}" class="text-gray-500 hover:text-primary-600 transition-colors relative p-2">
+                        <a href="<?php echo e(route('cart.view')); ?>" class="text-gray-500 hover:text-primary-600 transition-colors relative p-2">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                            @php 
+                            <?php 
                                 $cartCount = array_sum(session('cart', []));
-                            @endphp
-                            @if($cartCount > 0)
+                            ?>
+                            <?php if($cartCount > 0): ?>
                                 <span class="absolute top-1 right-1 h-4 w-4 bg-accent-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                                    {{ $cartCount }}
+                                    <?php echo e($cartCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
                         <div class="hidden md:block relative group">
                             <button class="flex items-center gap-2 pl-2 border-l border-gray-200 ml-2">
                                 <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xs uppercase">
-                                    {{ substr(Auth::user()->name, 0, 2) }}
+                                    <?php echo e(substr(Auth::user()->name, 0, 2)); ?>
+
                                 </div>
                             </button>
                             <div class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right">
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary-600">My Profile</a>
-                                <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary-600">Order History</a>
-                                <form method="POST" action="{{ route('logout') }}" class="mt-1 border-t border-gray-50">
-                                    @csrf
+                                <a href="<?php echo e(route('profile.edit')); ?>" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary-600">My Profile</a>
+                                <a href="<?php echo e(route('orders.index')); ?>" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary-600">Order History</a>
+                                <form method="POST" action="<?php echo e(route('logout')); ?>" class="mt-1 border-t border-gray-50">
+                                    <?php echo csrf_field(); ?>
                                     <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 font-medium">Logout</button>
                                 </form>
                             </div>
                         </div>
-                    @else
+                    <?php else: ?>
                         <div class="hidden md:flex items-center gap-4">
-                            <a href="{{ route('login') }}" class="text-sm font-bold text-gray-600 hover:text-primary-600">Log in</a>
-                            <a href="{{ route('register') }}" class="bg-primary-600 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-primary-700 shadow-md">Join</a>
+                            <a href="<?php echo e(route('login')); ?>" class="text-sm font-bold text-gray-600 hover:text-primary-600">Log in</a>
+                            <a href="<?php echo e(route('register')); ?>" class="bg-primary-600 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-primary-700 shadow-md">Join</a>
                         </div>
-                    @endauth
+                    <?php endif; ?>
 
                     <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 focus:outline-none relative z-50">
                         <svg id="menu-icon-open" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -140,49 +143,50 @@
 
         <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white border-t border-gray-100 shadow-2xl animate-slide-down">
             <div class="px-4 py-6 space-y-1">
-                <a href="{{ route('products.index') }}" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">Home</a>
-                <a href="{{ route('products.list') }}" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">Shop</a>
-                <a href="{{ route('about') }}" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">About Us</a>
-                <a href="{{ route('contact') }}" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">Contact</a>
+                <a href="<?php echo e(route('products.index')); ?>" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">Home</a>
+                <a href="<?php echo e(route('products.list')); ?>" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">Shop</a>
+                <a href="<?php echo e(route('about')); ?>" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">About Us</a>
+                <a href="<?php echo e(route('contact')); ?>" class="block px-4 py-3 rounded-xl font-bold text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors">Contact</a>
                 
                 <div class="pt-4 mt-4 border-t border-gray-100">
-                    @auth
+                    <?php if(auth()->guard()->check()): ?>
                         <div class="px-4 py-3 mb-2 flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-                                {{ substr(Auth::user()->name, 0, 1) }}
+                                <?php echo e(substr(Auth::user()->name, 0, 1)); ?>
+
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-gray-900">{{ Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
+                                <p class="text-sm font-bold text-gray-900"><?php echo e(Auth::user()->name); ?></p>
+                                <p class="text-xs text-gray-500"><?php echo e(Auth::user()->email); ?></p>
                             </div>
                         </div>
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-600">My Profile</a>
-                        <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-600">Order History</a>
-                        <form method="POST" action="{{ route('logout') }}" class="mt-4">
-                            @csrf
+                        <a href="<?php echo e(route('profile.edit')); ?>" class="block px-4 py-2 text-sm text-gray-600">My Profile</a>
+                        <a href="<?php echo e(route('orders.index')); ?>" class="block px-4 py-2 text-sm text-gray-600">Order History</a>
+                        <form method="POST" action="<?php echo e(route('logout')); ?>" class="mt-4">
+                            <?php echo csrf_field(); ?>
                             <button class="w-full text-center py-3 text-sm font-bold text-red-500 bg-red-50 rounded-xl">Logout</button>
                         </form>
-                    @else
+                    <?php else: ?>
                         <div class="grid grid-cols-2 gap-3 px-2">
-                            <a href="{{ route('login') }}" class="text-center py-3 font-bold text-gray-700 border border-gray-200 rounded-xl">Login</a>
-                            <a href="{{ route('register') }}" class="text-center py-3 font-bold bg-primary-600 text-white rounded-xl shadow-lg shadow-primary-200">Join Now</a>
+                            <a href="<?php echo e(route('login')); ?>" class="text-center py-3 font-bold text-gray-700 border border-gray-200 rounded-xl">Login</a>
+                            <a href="<?php echo e(route('register')); ?>" class="text-center py-3 font-bold bg-primary-600 text-white rounded-xl shadow-lg shadow-primary-200">Join Now</a>
                         </div>
-                    @endauth
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </nav>
 
     <main class="flex-grow pt-20">
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="max-w-7xl mx-auto px-4 mt-6 animate-fade-in">
                 <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-3 rounded-2xl flex items-center justify-between shadow-sm">
-                    <span class="text-sm font-medium">{{ session('success') }}</span>
+                    <span class="text-sm font-medium"><?php echo e(session('success')); ?></span>
                     <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-600">×</button>
                 </div>
             </div>
-        @endif
-        @yield('content')
+        <?php endif; ?>
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <script>
@@ -218,7 +222,7 @@
             const counter = element.querySelector('.message-counter');
             if(counter) counter.remove();
             
-            fetch('{{ route("messages.clear-notifications") }}', {
+            fetch('<?php echo e(route("messages.clear-notifications")); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -228,4 +232,4 @@
         }
     </script>
 </body>
-</html>
+</html><?php /**PATH C:\Project personel\SupplementStack\Supplements website\resources\views/layouts/main.blade.php ENDPATH**/ ?>
